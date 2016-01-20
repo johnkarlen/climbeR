@@ -1,0 +1,80 @@
+---
+title: "ClimbeR Examples"
+author: "John Karlen"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{climbeR_examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+## Example Data
+
+To illustrate a simple application of the climbeR package, I'll be using the "iris" data set, and feeding it to the `ranger` R package, for classification; the result includes a forest object that is ready to be climbed! (climbeRed?)
+
+To start, lets make our forest. The following code, is taken from the examples section of the Ranger documentation
+```{r, fig.show='hold'}
+require(ranger)
+
+## Classification forest with default settings
+ranger(Species ~ ., data = iris)
+
+## Prediction
+train.idx <- sample(nrow(iris), 2/3 * nrow(iris))
+iris.train <- iris[train.idx, ]
+iris.test <- iris[-train.idx, ]
+rg.iris <- ranger(Species ~ ., data = iris.train, write.forest = TRUE, importance = "impurity")
+pred.iris <- predict(rg.iris, dat = iris.test)
+table(iris.test$Species, pred.iris$predictions)
+```
+Notice that ranger has a built-in variable importance functionality (set with the `importance` argument), which can be turned on while running the experiment. Climber will offer an alternative to VIMP variable importance, which can be run after the experiment is done. All it needs, is the saved forest object, created by setting `write.forest = TRUE`
+
+The output of the call to `ranger` has the property `rg.iris$forest`. This is a snapshot of the random forest, created by Ranger; it's the critical input to climbeR, which lets it calculate minimal maximal subtree depth.
+
+## Using climbeR
+
+Now that we have the result of an Random Forest experiment, we can feed it to climbeR. The main function in climbeR is `getAndPlotSOvsFO`, which stands for "get and plot Second Order vs First Order"
+
+```{r, include=FALSE}
+library(climbeR)
+
+# call to climber function
+result <- getAndPlotSOvsFO(rg.iris)
+# ^ evaluated data ^
+eval_data <- result$subtree_metrics
+# second ord. vs first ord. plot
+so_vs_fo <- result$plot
+```
+```{r, eval=FALSE}
+library(climbeR)
+# call to climber function
+result <- getAndPlotSOvsFO(rg.iris)
+# evaluated data 
+eval_data <- result$subtree_metrics
+# second ord. vs first ord. plot
+so_vs_fo <- result$plot
+```
+Lets take at the `$plot` property of the `result`, created above.
+```{r, fig.width=6, fig.height=6}
+# let's take a look
+plot(so_vs_fo)
+```
+
+Variable importance in Random Forests is difficult to assess. One metric that provides some insight is the minimal depth at which a variable is used to split, on average, in the forest. Since each split in the tree subsets the data, splits near the root will affect larger portions of the data. In the plot above, we show first order (the highest split), and second order (the second highest split) average minimal maximal subtree depth. By this metric, the most important variables will occur in the bottom left corner, and the least important will occur at the top right. 
+
+How does our variable importance metric compare to the VIMP results of ranger?
+
+```{r}
+knitr::kable(rg.iris$variable.importance)
+```
+
+In the figure, dot size represents frequency with which the variable was used to split, in the forest. A boolean variable can only be used to split once because it is binary, so it's dot size will be small. A variable with high cardinality can be used to split many times, so it's dot size will probably be large.
+
+We can also look at the raw data:
+
+```{r, results='asis'}
+# another look at the result 
+knitr::kable(eval_data)
+```
+
