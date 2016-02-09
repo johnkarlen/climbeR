@@ -59,27 +59,28 @@ startRecursiveDepthBinning <- function(tree_split_varIDs) {
 
 #' Bin Forest by Depth
 #'
-#' Given a forest object, from the ranger package, this function will bin the
+#' Given a forest object from the ranger package, this function will bin the
 #' forest into depths. This is a helper function for the 'forestAvgMaxSubtree'
 #' function.
 #'
-#' @param forest a ranger object from the ranger package, which was created
-#' with param write.forest set to TRUE. In other words, it must have a 'forest'
-#' property.
+#' @param forest a ranger object created with the ranger package, which was 
+#' created with param write.forest set to TRUE. In other words, it must have a 
+#' 'forest' property.
 #' @return returns a list of two elements. the first is a list which contains a
 #' vector for each independent variable, where each element is that variable's
-#' minimal maximal subtree depth, for one tree. The second
-#' element returned, is a vector of tree lengths 'forest_depths'.
+#' maximal depth of a minimal subtree, for one tree. The second
+#' element returned, is a vector of tree heights 'forest_depths'.
 binForestByDepth <- function(forest) {
     trees <- forest$split.varIDs
     num_trees <- forest$num.trees
     num_vars <- length(forest$independent.variable.names)
     depth_bins <- list()
     forest_depths <- c()
-    # we need to know where to start indexing the vars its possible for a
-    # variable to never be used in the forest which confuses matching between
+    # we need to know where to start indexing the vars. Its possible for a
+    # variable never to be used in the forest which confuses matching between
     # variable names and var ID's
     var_id_dump <- unlist(forest$split.varIDs)
+    # get all non-zero var ID's, (0 represents a leaf node)
     var_id_set <- unique(var_id_dump[var_id_dump != 0])
     min_var_id <- min(var_id_set)
     # if every var occurs in the forest
@@ -87,11 +88,7 @@ binForestByDepth <- function(forest) {
         # then we can safely index like this:
         var_idx_offset <- min_var_id - 1
         # e.g. if min_var_id is 1, the offset is 0
-    } else {
-        print("ambiguous var id indexing. stopping...")
-        stop()
     }
-
 
     # preallocate an array for each var's list of subtree depths
     for (var in 1:num_vars) {
@@ -216,32 +213,29 @@ lookForVarsAbsentInForest <- function(counts, vars_used,
                 counts <- c(counts, 0)
             }
         }
-    } else {
-        # case where none are missing
-        return(counts)
     }
-    # last check before returning
-    num_missing <- num_ind_vars - length(counts)
-    # effectively an assert statement.
-    # This should never happen... fingers crossed
-    stopifnot(num_missing == 0)
     return(counts)
 }
 
 
 #' Forest Averaged Maximal Subtree
 #'
-#' Given an object of class ranger, from the Ranger package (write.forest must
+#' Given a result from the Ranger package (write.forest must
 #' be set to TRUE), this function will traverse the trees and calculate the
-#' minimal maximal subtree metric (first and second order)
+#' first and second order average minimal depth of a maximal subtree.
 #'
 #' @param ranger_obj a ranger object from the ranger package, which was created
-#' with param
-#' write.forest set to TRUE. In other words, it must have a 'forest' property.
-#' @return a data.frame with two columns: minimal maximal subtree depth (first
-#' and second order)
+#' by setting param write.forest to TRUE. In other words, it must have a 
+#' 'forest' property.
+#' @return a data.frame with two columns: averaged first and second order 
+#' minimal depth of a maximal subtree 
 #' @export
 forestAvgMaxSubtree <- function(ranger_obj) {
+    if(!("forest" %in% names(ranger_obj))){
+        stop("no forest attribute present in ranger result. 
+             Please run Ranger with write_forest set to TRUE")
+    }
+    
     forest <- ranger_obj$forest
     binned_forest <- binForestByDepth(forest)
     # use average forest depth for variables that are never used to split

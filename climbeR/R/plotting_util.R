@@ -1,4 +1,5 @@
-#' Plot Second Order vs First Order, minimal maximal subtree depth
+#' Plot Second Order vs First Order, minimal depth of a maximal subtree,
+#' averaged over the forest (shortened to "metric" for brevity)
 #'
 #' Given eval data from forestAvgMaxSubtree, plot the result
 #'
@@ -7,7 +8,7 @@
 #' @return so_vs_fo, a ggplot2 object, which plots first order vs second
 #' order minimal maximal subtree depth
 #' @export
-plotScndFrstOrdrMinDepth <- function(eval_data) {
+plotFirstAndSecondOrderMetric <- function(eval_data) {
     so_vs_fo <- ggplot(eval_data, aes(x = first_order,
                                       y = second_order,
                                       size = normalized_counts))
@@ -25,7 +26,7 @@ plotScndFrstOrdrMinDepth <- function(eval_data) {
 
 #' Plot Second Order vs First Order minimal maximal subtree depth (base R)
 #'
-#' base r version of plotScndFrstOrdrMinDepth (just an alternative)
+#' base r version of plotFirstAndSecondOrderMetric (just an alternative)
 #'
 #' @param eval_data, the output of forestAvgMaxSubtree
 #' @export
@@ -40,10 +41,10 @@ baseRPlotting <- function(eval_data) {
               labels = eval_data[[3]], pos = 4))
 }
 
-#' Calculate subtree depth metric, and make Second Ord. vs First Ord. plot
+#' Calculate the metric, and make Second Ord. vs First Ord. plot
 #'
-#' comprehensive function for calculating subtree metric, and then
-#' plotting the result
+#' comprehensive function for calculating minimal depth of a maximal 
+#' subtree, averaged over the forest, and then plotting the result
 #'
 #' @param ranger_result ranger result with a saved $forest object.
 #' (set write.forest to TRUE)
@@ -54,10 +55,10 @@ baseRPlotting <- function(eval_data) {
 #' library(ranger)
 #' rg.veteran <- ranger(Surv(time, status) ~ ., data = veteran, write.forest =
 #' TRUE)
-#' result <- getAndPlotSOvsFO(rg.veteran)
+#' result <- getAndPlotFirstAndSecondOrderMetric(rg.veteran)
 #' @export
-getAndPlotSOvsFO <- function(ranger_result) {
+getAndPlotFirstAndSecondOrderMetric <- function(ranger_result) {
     eval_data <- forestAvgMaxSubtree(ranger_result)
-    so_vs_fo <- plotScndFrstOrdrMinDepth(eval_data)
+    so_vs_fo <- plotFirstAndSecondOrderMetric(eval_data)
     return(list(subtree_metrics = eval_data, plot = so_vs_fo))
 }
