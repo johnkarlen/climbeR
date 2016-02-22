@@ -10,6 +10,6 @@ baseRPlotting(eval_data)
 \item{eval_data, }{the output of forestAvgMaxSubtree}
 }
 \description{
-base r version of plotScndFrstOrdrMinDepth (just an alternative)
+base r version of plotFirstAndSecondOrderMetric (just an alternative)
 }
 
