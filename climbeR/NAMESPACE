@@ -2,6 +2,6 @@
 
 export(baseRPlotting)
 export(forestAvgMaxSubtree)
-export(getAndPlotSOvsFO)
-export(plotScndFrstOrdrMinDepth)
+export(getAndPlotFirstAndSecondOrderMetric)
+export(plotFirstAndSecondOrderMetric)
 import(ggplot2)

@@ -8,12 +8,12 @@ startRecursiveDepthBinning(tree_split_varIDs)
 }
 \arguments{
 \item{tree_split_varIDs}{given one element of a 'split.varIDs' list, this
-function will pass it to the recursiveDepthBinning function, to bin the tree
+function will pass it to the recursiveDepthBinning function to bin the tree
 by depth, starting at the root.}
 }
 \value{
-returns a list with an element per depth encountered. Each element
-is a vector of variable IDs
+binned_depths a list with an element per depth encountered. Each 
+element is a vector of variable IDs
 }
 \description{
 The starter function for the recursion in recursiveDepthBinning.

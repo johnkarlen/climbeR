@@ -13,8 +13,8 @@ updated with 0's for variables that didn't occur in the forest}
 \item{vars_used}{the current list of varID's that have been found in the
 forest}
 
-\item{num_ind_vars}{the number of independent vars. There needs to this
-many elements in counts.}
+\item{num_ind_vars}{the number of independent vars. Counts must have this
+many elements.}
 
 \item{forest}{pass this to access the 'status.varID', if necessary}
 }
@@ -24,8 +24,8 @@ updated counts vector
 \description{
 Find any remaining vars, if missing. Vars can be absent in the forest, if
 they were never used to split. This function does some bookkeeping, to find
-where the 0's should be, in the counts vector. If there weren't enough vars
-observed, their indeces must be, either at the end of vars_used, or the
+elements in the count vector that should be 0. If there weren't enough vars
+observed, their indeces must be either at the end of vars_used, or the
 beginning
 }
 

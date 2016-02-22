@@ -7,11 +7,10 @@
 recursiveDepthBinning(node_list, depth, expected_num_children, binned_depths)
 }
 \arguments{
-\item{node_list}{must be in the format of the ranger package's
-forest$split.varIDs objects.
-recursion is done by counting the number of terminal nodes at the current
-depth, to anticipate the correct number of nodes in the next depth.
-It represents one tree of the forest}
+\item{node_list}{must be in the format of elements in the Ranger package's
+forest$split.varIDs, which epresents one tree in the forest.
+Recursion is done by counting the number of terminal nodes at the current
+depth to anticipate the correct number of nodes at the next depth.}
 
 \item{depth}{each recursive call must know the current depth in the tree.}
 

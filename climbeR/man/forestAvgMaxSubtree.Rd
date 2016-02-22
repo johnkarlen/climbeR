@@ -8,16 +8,16 @@ forestAvgMaxSubtree(ranger_obj)
 }
 \arguments{
 \item{ranger_obj}{a ranger object from the ranger package, which was created
-with param
-write.forest set to TRUE. In other words, it must have a 'forest' property.}
+by setting param write.forest to TRUE. In other words, it must have a 
+'forest' property.}
 }
 \value{
-a data.frame with two columns: minimal maximal subtree depth (first
-and second order)
+a data.frame with two columns: averaged first and second order 
+minimal depth of a maximal subtree
 }
 \description{
-Given an object of class ranger, from the Ranger package (write.forest must
+Given a result from the Ranger package (write.forest must
 be set to TRUE), this function will traverse the trees and calculate the
-minimal maximal subtree metric (first and second order)
+first and second order average minimal depth of a maximal subtree.
 }
 
