@@ -38,34 +38,30 @@ pred.iris <- predict(rg.iris, dat = iris.test)
 table(iris.test$Species, pred.iris$predictions)
 ```
 
-Notice that ranger has a built-in feature strength functionality - set with the `importance` argument - which can be turned on while running the experiment. Climber will offer an alternative to VIMP Variable Importance, which can be run after the experiment is finished and the trees have already been generated. All climber needs is a saved forest object created by setting `write.forest = TRUE`. This output of `ranger` has the property `rg.iris$forest`. This is a snapshot of the random forest created by Ranger; it's the critical input to climbeR, which lets it calculate minimal depth of maximal subtrees.
+Notice that ranger has a built-in feature strength functionality - set with the `importance` argument - which can be turned on while running the experiment. Climber will offer an alternative to VIMP Variable Importance, which can be run after the experiment is finished. All climber needs is a saved forest object created by setting `write.forest = TRUE`. This output of `ranger` has the property `rg.iris$forest`. This is a snapshot of the random forest created by Ranger; it's the critical input to climbeR, which lets it calculate minimal depth of maximal subtrees.
 
 ## Using climbeR
 
-Now that we have the result of a Random Forest experiment we can feed it to climbeR. The main function in climbeR is `getAndPlotMetric`, which stands for "Get and Plot Second Order vs First Order" of the metric (minimal depth of a maximal subtree). "First Order" is the metric as described above, while "Second Order" is the second most minimal depth of a maximal subtree. When a feature is used to split at the minimal depth of a maximal subtree, if the subsetted populations contain predictive information, they may be selected to create another split and subtree, the highest of which we will call the "Second Order Minimal Depth of a Maximal Subtree". Strong features with large amounts of information will have high first and second order values for the metric. 
+Now that we have the result of a Random Forest experiment we can feed it to climbeR. The main function in climbeR is `getAndPlotFirstVsSecondOrderMetric`, which stands for "Get and Plot Second Order vs First Order" of the metric (minimal depth of a maximal subtree). "First Order" is the metric as described above, while "Second Order" is the second most minimal depth of a maximal subtree. When a feature is used to split at the minimal depth of a maximal subtree, if the subsetted populations contain predictive information, they may be selected to create another split and subtree, the highest of which we will call the "Second Order Minimal Depth of a Maximal Subtree". Strong features with large amounts of information will have high first and second order values for the metric. 
 
 ```{r, include=FALSE}
 library(climbeR)
 
 # call to climber function
-result <- getAndPlotMetric(rg.iris)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.iris)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second order vs first order plot
-so_vs_fo <- result$so_vs_fo_plot
-# number of splits vs first order plot
-ns_vs_fo <- result$ns_vs_fo
+so_vs_fo <- result$plot
 ```
 ```{r, eval=FALSE}
 library(climbeR)
 # call to climber function
-result <- getAndPlotMetric(rg.iris)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.iris)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second order vs first order plot
-so_vs_fo <- result$so_vs_fo_plot
-# number of splits vs first order plot
-ns_vs_fo <- result$ns_vs_fo
+so_vs_fo <- result$plot
 ```
 Lets take at the `$plot` property of the `result` object, created above.
 ```{r, fig.width=6, fig.height=6}
@@ -73,7 +69,7 @@ Lets take at the `$plot` property of the `result` object, created above.
 plot(so_vs_fo)
 ```
 
-In the plot above, we show first and second order minimal depth of a maximal subtree averaged across the forest. The metric's high scoring features will appear closest to the bottom left corner of the plot.
+In the plot, above, we show first and second order, minimal depth of a maximal subtree, averaged across the forest. The metric's high scoring features will appear closest to the bottom left corner of the plot.
 
 How does our feature strength metric compare to the VIMP results of ranger?
 
@@ -81,20 +77,13 @@ How does our feature strength metric compare to the VIMP results of ranger?
 knitr::kable(rg.iris$variable.importance)
 ```
 
-In our plot, dot size represents split frequency of the feature in the forest. A boolean variable can only be used to split once per population because it is binary. This effect limits split frequency (chosing a boolean feature to split on at a node prevents descendant nodes from using that feature to split again). A variable with high cardinality can be used to split many times per population, which can have the affect of saturating a tree's decision nodes, and inflating the average minimal depth of a maximal subtree. This means that our metric unfairly weighs variables of disparate cardinalities.
-
-To further illustrate this bias towards features with high cardinality, we can plot the metric against split frequency.
-
-```{r, fig.width=6, fig.height=6}
-# second order vs first order plot
-plot(result$ns_vs_fo)
-```
+In our plot, dot size represents frequency with which the feature was used to split in the forest. A boolean variable can only be used to split once because it is binary, so its split frequency will be low (1 split). A variable with high cardinality can be used to split many times, which can have the affect of saturating a tree's decision nodes. This inflates the average minimal depth of a maximal subtree for variables with high cardinality, and makes for an unfair comparison among variables of disparate cardinalities.
 
 We can also look at the raw data:
 
 ```{r, results='asis'}
 # call to climber function
-result <- getAndPlotMetric(rg.iris)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.iris)
 # evaluated data 
 eval_data <- result$subtree_metrics
 # another look at the result 
@@ -130,20 +119,20 @@ Now that we have the result of a Random Survival Forest experiment, we can feed 
 ```{r, include=FALSE}
 library(climbeR)
 # call to climber function
-result <- getAndPlotMetric(rg.veteran)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.veteran)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second ord. vs first ord. plot
-so_vs_fo <- result$so_vs_fo_plot
+so_vs_fo <- result$plot
 ```
 ```{r, eval=FALSE}
 library(climbeR)
 # call to climber function
-result <- getAndPlotMetric(rg.veteran)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.veteran)
 # evaluated data 
 eval_data <- result$subtree_metrics
 # second ord. vs first ord. plot
-so_vs_fo <- result$so_vs_fo_plot
+so_vs_fo <- result$plot
 ```
 Lets take at the `$plot` property of the `result`, created above.
 ```{r, fig.width=6, fig.height=6}
@@ -206,11 +195,11 @@ rg.veteran <- ranger(Surv(time, status) ~ .,
                      write.forest = TRUE)
 
 # call to climber function
-result <- getAndPlotMetric(rg.veteran)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.veteran)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second ord. vs first ord. plot
-so_vs_fo <- result$so_vs_fo_plot
+so_vs_fo <- result$plot
 ```
 ```{r, eval=FALSE}
 # make some noise!
@@ -222,11 +211,11 @@ rg.veteran <- ranger(Surv(time, status) ~ .,
                      write.forest = TRUE)
 
 # call to climber function
-result <- getAndPlotMetric(rg.veteran)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.veteran)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second ord. vs first ord. plot
-so_vs_fo <- result$so_vs_fo_plot
+so_vs_fo <- result$plot
 ```
 Lets take at the plot:
 ```{r, fig.width=6, fig.height=6}
@@ -252,11 +241,11 @@ rg.veteran <- ranger(Surv(time, status) ~ .,
                      write.forest = TRUE)
 
 # call to climber function
-result <- getAndPlotMetric(rg.veteran)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.veteran)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second ord. vs first ord. plot
-so_vs_fo <- result$so_vs_fo_plot
+so_vs_fo <- result$plot
 ```
 ```{r, eval=FALSE}
 # just removing the noise features by reloading the dataset
@@ -270,11 +259,11 @@ rg.veteran <- ranger(Surv(time, status) ~ .,
                      write.forest = TRUE)
 
 # call to climber function
-result <- getAndPlotMetric(rg.veteran)
+result <- getAndPlotFirstVsSecondOrderMetric(rg.veteran)
 # ^ evaluated data ^
 eval_data <- result$subtree_metrics
 # second ord. vs first ord. plot
-so_vs_fo <- result$so_vs_fo_plot
+so_vs_fo <- result$plot
 ```
 
 Lets take at the plot:

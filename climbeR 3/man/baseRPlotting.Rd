@@ -10,9 +10,6 @@ baseRPlotting(eval_data)
 \arguments{
 \item{eval_data}{The output of calculateAMDMS.}
 }
-\value{
-plot object
-}
 \description{
 Base r version of plotFirstAndSecondOrderMetric (just an alternative).
 }

@@ -1,6 +1,6 @@
 Package: climbeR
-Title: Calculate Average Minimal Depth of a Maximal Subtree for Ranger Package 
-    Forests
+Title: Calculate Average Minimal Depth of a Maximal Subtree for Ranger
+        Package Forests
 Version: 0.1
 Authors@R: c(person("John", "Karlen", email = "jkarlen@massmutual.com",
                   role = c("aut", "cre")), 
@@ -11,16 +11,14 @@ Description: Calculates first, and second order, average minimal depth of a
     package. This variable importance metric is implemented as described in
     Ishwaran et. al.
     ("High-Dimensional Variable Selection for Survival Data", March 2010)
-Depends: 
-    R (>= 3.1.0)
+Depends: R (>= 3.1.0)
 License: MIT + file LICENSE
-Imports: 
-    ggplot2 (>= 1.0.1),
-    dplyr
-Suggests: 
-    survival (>= 2.38-1),
-    ranger,
-    knitr,
-    rmarkdown
+Imports: ggplot2 (>= 1.0.1), dplyr
+Suggests: survival (>= 2.38-1), ranger, knitr, rmarkdown
 RoxygenNote: 5.0.0
 VignetteBuilder: knitr
+NeedsCompilation: no
+Packaged: 2016-02-23 14:21:57 UTC; mm40138
+Author: John Karlen [aut, cre],
+  MassMutual Advanced Analytics [aut] (http://datascience.massmutual.com)
+Maintainer: John Karlen <jkarlen@massmutual.com>
