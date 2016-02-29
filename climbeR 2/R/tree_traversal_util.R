@@ -286,6 +286,5 @@ calculateAMDMS <- function(ranger_obj) {
     result <- cbind(result, splits_per_var)
     # sort by first order
     result <- result[order(result$first_order), ]
-    result <- subset(result, select = -c(var_ids, variable_id))
     return(result)
 }

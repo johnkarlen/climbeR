@@ -2,7 +2,6 @@
 
 export(baseRPlotting)
 export(calculateAMDMS)
-export(getAndPlotMetric)
-export(plotAMDMSvsNumSplits)
+export(getAndPlotFirstVsSecondOrderMetric)
 export(plotFirstAndSecondOrderMetric)
 import(ggplot2)
