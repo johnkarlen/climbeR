@@ -4,10 +4,10 @@
 \alias{countSplitsPerVar}
 \title{Count Splits Per Variable}
 \usage{
-countSplitsPerVar(ranger_obj)
+countSplitsPerVar(ranger_obj_forest)
 }
 \arguments{
-\item{ranger_obj}{A ranger object from the ranger package, which was created
+\item{ranger_obj_forest}{A ranger object from the ranger package, which was created
 with param write.forest set to TRUE. In other words, it must have a 
 'forest' property.}
 }

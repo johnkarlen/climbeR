@@ -3,49 +3,53 @@ library("climbeR")
 require("survival")
 
 rg.veteran <- readRDS("rg_veteran.rds")
+forest <- rg.veteran$forest
+num_vars <- length(forest$independent.variable.names)
 
-# test_that("expect getAndPlotFirstAndSecondOrderMetric produces the same 
-#           evaluated data",{
-#               expect_equal(getAndPlotFirstAndSecondOrderMetric(rg.veteran)$eval_data,
-#                            veteran_result$eval_data)
-#               expect_equal(getAndPlotFirstAndSecondOrderMetric(rg.veteran)$so_vs_fo,
-#                            veteran_result$so_vs_fo)
-#           })
-
-test_that("plotting function produces correct result, given eval data",{
-    expect_equal(plotFirstAndSecondOrderMetric(rg.veteran),
-                 veteran_result$eval_data$so_vs_fo)
-})
-
-test_that("forest averaged minimal depth of a maximal subtree calculation",{
-    expect_equal(forestAvgMaxSubtree(rg.veteran), veteral_result$eval_data)
-})
-
-test_that("test that number of variables in the forest is less than or
-          equal to the number of independent vars", {
-              forest <- rg.veteran$forest
-              num_vars <- length(forest$independent.variable.names)
-              binned_forest <- binForestByDepth(forest)
-              expect_lte(length(unique(unlist(a$depth_bins))), num_vars)
+test_that("all independent variables were accounted for",
+          {
+              eval_data <- calculateAMDMS(rg.veteran)
+              expect_equal(rg.veteran$num.independent.variables,
+                           nrow(eval_data))
           })
 
-# test_that("test that a RF generated from Iris has the correct properties",{
-#     require(ranger)
-#     
-#     ## Classification forest with default settings
-#     ranger(Species ~ ., data = iris)
-#     
-#     ## Prediction
-#     train.idx <- sample(nrow(iris), 2/3 * nrow(iris))
-#     iris.train <- iris[train.idx, ]
-#     iris.test <- iris[-train.idx, ]
-#     rg.iris <- ranger(Species ~ ., data = iris.train, write.forest = TRUE,
-#                       importance = "impurity")
-#     
-#     # call to climber function
-#     result <- getAndPlotFirstAndSecondOrderMetric(rg.iris)
-#     # ^ evaluated data ^
-#     eval_data <- result$subtree_metrics
-#     # second order vs first order plot
-#     so_vs_fo <- result$plot
-# })
+test_that("test the properties of the object returned by binForestByDepth", 
+          {
+              binned_forest <- binForestByDepth(forest)
+              
+              # number of vars in forest is less than or equal to num indep.
+              # variables
+              expect_lte(length(binned_forest$variable_ids_used), num_vars)
+              expect_lte(length(binned_forest$depth_bins), num_vars)
+              # minimum depth is 1 (at least one feature must occupy the 
+              # root node)
+              expect_equal(min(unlist(binned_forest$depth_bins)), 1)
+              # number of trees binned is correct
+              expect_equal(rg.veteran$num.trees, 
+                           length(binned_forest$depth_bins[[1]]))
+              expect_equal(rg.veteran$num.trees, 
+                           length(binned_forest$forest_depths))
+          })
+
+test_that("test properties of the object returned by countSplitsPerVar",
+          {
+
+              
+              splits_per_var <- countSplitsPerVar(rg.veteran$forest)
+              # all variables accounted for
+              expect_equal(nrow(splits_per_var), num_vars)
+              # normalized counts less than 1, greater than or equal to 0
+              expect_true(all(splits_per_var$normalized_counts < 1))
+              expect_true(all(splits_per_var$normalized_counts >= 0))
+          })
+
+test_that("test depth binning recursive function",
+          {
+              binned_tree = 
+                  startRecursiveDepthBinning(forest$split.varIDs[[1]])
+              # first bin should only have one element (the root)
+              expect_equal(length(binned_tree[[1]]), 1)
+              
+              # all populated depths should contain elements
+              expect_true(all(lapply(binned_tree,length) > 0))
+          })
