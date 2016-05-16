@@ -18,7 +18,8 @@ cardinality.}
 }
 \value{
 a list; element 1 is a data.frame containing subtree depth
-data, element 2 is the plot.
+data, element 2 is the plot of number of splits vs first order metric,
+element 3 is a plot of second order vs first order.
 }
 \description{
 Comprehensive function for calculating minimal depth of a maximal 

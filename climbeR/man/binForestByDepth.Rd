@@ -12,13 +12,14 @@ with param write.forest set to TRUE. In other words, it must have a
 'forest' property.}
 }
 \value{
-A list with 2 elements. The first is a list of vectors - 
+A list with 3 elements. The first is a list of vectors - 
 one for each independent variable ocurring in the forest (this may not 
 be the complete set of independent variables, but we will account for any
 variables that do not occur in the forest later). Each vector contains all
 minimal depths of maximal subtrees in the forest, for the corresponding 
-independent variable. The second element is a vector of tree 
-heights 'forest_depths'.
+independent variable. The second element is a vector of tree heights
+'forest_depths'. The third element is a set of variable id's for matching to
+independent variable names.
 }
 \description{
 Given a forest object from the ranger package, this function will bin the

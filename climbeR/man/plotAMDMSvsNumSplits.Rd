@@ -4,10 +4,13 @@
 \alias{plotAMDMSvsNumSplits}
 \title{Plot metric vs number of splits per variable.}
 \usage{
-plotAMDMSvsNumSplits(eval_data)
+plotAMDMSvsNumSplits(eval_data, add_text_labels = FALSE)
 }
 \arguments{
 \item{eval_data}{The output of calculateAMDMS.}
+
+\item{add_text_labels}{An optional parameter to turn on text labels next
+to the feature's dot on the plot.}
 }
 \value{
 plot object

@@ -1,7 +1,7 @@
 #' Plot Second Order vs First Order, minimal depth of a maximal subtree,
 #' averaged over the forest (shortened to "metric" for brevity)
 #'
-#' Given eval data from calculateAMDMS, plot the result.
+#' Given evaluated data from calculateAMDMS, plot the result.
 #'
 #' @import ggplot2
 #' @param eval_data The output of calculateAMDMS.
@@ -9,21 +9,21 @@
 #' have a first order metric value. Variables can have high feature strength, 
 #' but may be unlikely to have a second maximal subtree because of low
 #' cardinality.
+#' @param add_text_labels An optional parameter to turn on text labels next
+#' to the feature's dot on the plot.
 #' @return so_vs_fo A ggplot2 object, which shows second order vs first
 #' order average minimal depth of a maximal subtree depth.
 #' @export
 plotFirstAndSecondOrderMetric <- function(eval_data,
-                                          plot_missing_so = FALSE) {
+                                          plot_missing_so = FALSE,
+                                          add_text_labels = FALSE) {
     
     # exclude features that only have a first order value for the metric
     plot_data <- eval_data[eval_data$second_order != -1, ]
     plot_data <- plot_data[order(plot_data$second_order), ]
     
+    # palette
     colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(plot_data))
-    
-    # offset the y coord of the text labels by 1/30th of the y range
-    y_range = max(plot_data$second_order) - min(plot_data$second_order)
-    y_lab_offset = -1
 
     so_vs_fo <- ggplot(plot_data, aes(x = first_order,
                                       y = second_order,
@@ -36,11 +36,17 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
         xlab("First Order Depth") + ylab("Second Order Depth") +
         ggtitle("Minimal Depth of a Maximal Subtree\nAveraged Over Forest") +
         labs(size = "number of splits\nin forest", color = "feature") +
-        geom_text(aes(label = rownames(plot_data)), size = 1, vjust = y_lab_offset) +
         xlim(min(plot_data$first_order) - 1, max(plot_data$first_order) + 1) +
         scale_colour_manual(breaks = rev(plot_data$second_order),
                             labels = rev(rownames(plot_data)),
                             values = rev(colors))
+    
+    if(add_text_labels){
+        # offset the y coord of the text labels
+        y_lab_offset = -2
+        so_vs_fo <- so_vs_fo +
+            geom_text(aes(label = rownames(plot_data)), size = 1, vjust = y_lab_offset)
+    }
 
     # separate features that only have a first order value for the metric
     if( plot_missing_so || !any(eval_data$second_order == -1) ){
@@ -65,11 +71,16 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
 #' many splits will be weighed unfairly by the metric.
 #'
 #' @param eval_data The output of calculateAMDMS.
+#' @param add_text_labels An optional parameter to turn on text labels next
+#' to the feature's dot on the plot.
 #' @return plot object
 #' @export
-plotAMDMSvsNumSplits <- function(eval_data) {
+plotAMDMSvsNumSplits <- function(eval_data,
+                                 add_text_labels = FALSE) {
     
+    # palette
     colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(eval_data))
+    
     ns_vs_fo <- ggplot(eval_data, aes(x = first_order,
                                       y = counts,
                                       color = factor(first_order)),
@@ -77,7 +88,6 @@ plotAMDMSvsNumSplits <- function(eval_data) {
     
     ns_vs_fo <- ns_vs_fo +
         geom_point() +
-        geom_text(aes(label = rownames(eval_data)), size = 1) +
         xlab("Average Minimal Depth\nof a Maximal Subtree") +
         ylab("Number of\nSplits") +
         ggtitle("Minimal Depth of a Maximal Subtree\nAveraged Over Forest") +
@@ -86,6 +96,12 @@ plotAMDMSvsNumSplits <- function(eval_data) {
         scale_colour_manual(breaks = rev(eval_data$first_order),
                             labels = rev(rownames(eval_data)),
                             values = rev(colors))
+    
+    if(add_text_labels){
+        ns_vs_fo <- ns_vs_fo +
+            geom_text(aes(label = rownames(eval_data)), size = 1)
+    }
+    
     return(ns_vs_fo)
 }
 
