@@ -9,17 +9,15 @@ countSplitsPerVar <- function(forest)
   dump_split_IDs <- unlist(trees)
   sorted_var_id <- sort(unique(dump_split_IDs))
   vars_used <- sorted_var_id
-
+  
   for (i in vars_used) {
     if (!(i %in% sorted_var_id)) {
       counts <- c(counts, 0)
     }
     else {
-      counts <- ifelse(length(dump_split_IDs[dump_split_IDs == 
-                                               i]),
-        c(counts, length(dump_split_IDs[dump_split_IDs == 
-                                                  i])),
-        c(counts,0))
+      counts[i] <- ifelse(length(dump_split_IDs[dump_split_IDs == i]),
+                          length(dump_split_IDs[dump_split_IDs == i]),
+                          0)
     }
   }
   # counts <- lookForVarsAbsentInForest(counts, vars_used, num_ind_vars, 
@@ -30,3 +28,4 @@ countSplitsPerVar <- function(forest)
   rownames(result) <- forest$independent.variable.names
   return(result)
 }
+
