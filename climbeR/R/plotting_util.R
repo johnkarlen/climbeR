@@ -6,7 +6,7 @@
 #' @import ggplot2
 #' @param eval_data The output of calculateAMDMS.
 #' @param plot_missing_so An optional parameter to show features that only
-#' have a first order metric value. Variables can have high feature strength, 
+#' have a first order metric value. Variables can have high feature strength,
 #' but may be unlikely to have a second maximal subtree because of low
 #' cardinality.
 #' @param add_text_labels An optional parameter to turn on text labels next
@@ -17,11 +17,11 @@
 plotFirstAndSecondOrderMetric <- function(eval_data,
                                           plot_missing_so = FALSE,
                                           add_text_labels = FALSE) {
-    
+
     # exclude features that only have a first order value for the metric
     plot_data <- eval_data[eval_data$second_order != -1, ]
     plot_data <- plot_data[order(plot_data$second_order), ]
-    
+
     # palette
     colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(plot_data))
 
@@ -30,7 +30,7 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
                                       size = counts,
                                       color = factor(second_order)),
                        environment = environment())
-    
+
     so_vs_fo <- so_vs_fo +
         geom_point() +
         xlab("First Order Depth") + ylab("Second Order Depth") +
@@ -40,7 +40,7 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
         scale_colour_manual(breaks = rev(plot_data$second_order),
                             labels = rev(rownames(plot_data)),
                             values = rev(colors))
-    
+
     if(add_text_labels){
         # offset the y coord of the text labels
         y_lab_offset = -2
@@ -65,7 +65,7 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
     return(so_vs_fo)
 }
 
-#' Plot metric vs number of splits per variable. 
+#' Plot metric vs number of splits per variable.
 #'
 #' Plots the metric against the number of splits in the forest. Features with
 #' many splits will be weighed unfairly by the metric.
@@ -77,15 +77,15 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
 #' @export
 plotAMDMSvsNumSplits <- function(eval_data,
                                  add_text_labels = FALSE) {
-    
+
     # palette
     colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(eval_data))
-    
+
     ns_vs_fo <- ggplot(eval_data, aes(x = first_order,
                                       y = counts,
                                       color = factor(first_order)),
                        environment = environment())
-    
+
     ns_vs_fo <- ns_vs_fo +
         geom_point() +
         xlab("Average Minimal Depth\nof a Maximal Subtree") +
@@ -96,12 +96,12 @@ plotAMDMSvsNumSplits <- function(eval_data,
         scale_colour_manual(breaks = rev(eval_data$first_order),
                             labels = rev(rownames(eval_data)),
                             values = rev(colors))
-    
+
     if(add_text_labels){
         ns_vs_fo <- ns_vs_fo +
             geom_text(aes(label = rownames(eval_data)), size = 1)
     }
-    
+
     return(ns_vs_fo)
 }
 
@@ -129,14 +129,14 @@ baseRPlotting <- function(eval_data) {
 
 #' Calculate the metric and make Second Order vs First Order plot
 #'
-#' Comprehensive function for calculating minimal depth of a maximal 
+#' Comprehensive function for calculating minimal depth of a maximal
 #' subtree averaged over the forest and then plotting the result.
 #'
-#' @param ranger_result A ranger object from the ranger package, which was 
+#' @param ranger_result A ranger object from the ranger package, which was
 #' created setting param write.forest to TRUE. In other words, it must have a
 #' 'forest' property.
 #' @param plot_missing_so An optional parameter to show features that only
-#' have a first order metric value. Variables can have high feature strength, 
+#' have a first order metric value. Variables can have high feature strength,
 #' but may be unlikely to have a second maximal subtree because of low
 #' cardinality.
 #' @return a list; element 1 is a data.frame containing subtree depth
@@ -149,7 +149,7 @@ baseRPlotting <- function(eval_data) {
 #' TRUE)
 #' result <- getAndPlotMetric(rg.veteran)
 #' @export
-getAndPlotMetric <- function(ranger_result, 
+getAndPlotMetric <- function(ranger_result,
                              plot_missing_so = FALSE){
     # get metric
     eval_data <- calculateAMDMS(ranger_result)

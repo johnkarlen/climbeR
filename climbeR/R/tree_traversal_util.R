@@ -22,7 +22,7 @@ recursiveDepthBinning <- function(node_list,
     # nodelist becomes all nodes at depths lower than current depth
     node_list <- node_list[(expected_num_children + 1):length(node_list)]
     # store and count the # of non-leaves at the current depth
-    nodes <- children[children != 0]
+    nodes <- children[!is.na(children)]
     # calculate expected number of children in the next recursion
     expected_num_children <- 2 * length(nodes)
     ### BASE CASE ### base case (no nodes at current depth)
@@ -46,7 +46,7 @@ recursiveDepthBinning <- function(node_list,
 #' @param tree_split_varIDs Given one element of a 'split.varIDs' list, this
 #' function will pass it to the recursiveDepthBinning function to bin the tree
 #' by depth, starting at the root.
-#' @return A list with an element per depth encountered. Each 
+#' @return A list with an element per depth encountered. Each
 #' element is a vector of variable IDs
 startRecursiveDepthBinning <- function(tree_split_varIDs) {
     binned_depths <- list()
@@ -63,13 +63,13 @@ startRecursiveDepthBinning <- function(tree_split_varIDs) {
 #' function.
 #'
 #' @param ranger_obj A ranger object from the ranger package, which was created
-#' with param write.forest set to TRUE. In other words, it must have a 
+#' with param write.forest set to TRUE. In other words, it must have a
 #' 'forest' property.
-#' @return A list with 3 elements. The first is a list of vectors - 
-#' one for each independent variable ocurring in the forest (this may not 
+#' @return A list with 3 elements. The first is a list of vectors -
+#' one for each independent variable ocurring in the forest (this may not
 #' be the complete set of independent variables, but we will account for any
 #' variables that do not occur in the forest later). Each vector contains all
-#' minimal depths of maximal subtrees in the forest, for the corresponding 
+#' minimal depths of maximal subtrees in the forest, for the corresponding
 #' independent variable. The second element is a vector of tree heights
 #' 'forest_depths'. The third element is a set of variable id's for matching to
 #' independent variable names.
@@ -83,16 +83,19 @@ binForestByDepth <- function(ranger_obj) {
     forest_depths <- c()
 
     # get all non-zero var ID's, (0 represents a leaf node)
-    var_id_dump <- unlist(ranger_obj$split.varIDs)
-    var_id_set <- unique(var_id_dump[var_id_dump != 0])
+    var_id_set <- ranger_obj$split.varIDs |>
+      unlist() |>
+      unique() |>
+      setdiff(c(0))
+
     # number of vars that occur in the forest
     num_vars <- length(var_id_set)
-    
+
     # preallocate an array for each var's list of subtree depths
     for (var in 1:num_vars) {
         depth_bins[[var]] <- vector(mode = "list", length = num_trees)
     }
-    
+
     # iterate over the forest
     for (tree_idx in 1:num_trees) {
         # bin each tree
@@ -109,8 +112,8 @@ binForestByDepth <- function(ranger_obj) {
             }
         }
     }
-    return(list(depth_bins = depth_bins, 
-                forest_depths = forest_depths, 
+    return(list(depth_bins = depth_bins,
+                forest_depths = forest_depths,
                 variable_ids_used = var_id_set))
 }
 
@@ -121,7 +124,7 @@ binForestByDepth <- function(ranger_obj) {
 #' tree.
 #'
 #' @param ranger_obj_forest A ranger object from the ranger package, which was created
-#' with param write.forest set to TRUE. In other words, it must have a 
+#' with param write.forest set to TRUE. In other words, it must have a
 #' 'forest' property.
 #' @return A dataframe with one column of counts, and one column of
 #' normalized counts. Rows are labeled by variable names.
@@ -136,19 +139,19 @@ countSplitsPerVar <- function(ranger_obj_forest) {
     # dump all the split ID's into one container
     dump_split_IDs <- unlist(trees)
     dump_split_IDs <- dump_split_IDs[dump_split_IDs != 0]
-    
+
     # get the list of var id's that occurred in the forest
     sorted_var_id <- sort(unique(dump_split_IDs))
-    
-    # it's possible for a var ID to be absent from the forest because 
+
+    # it's possible for a var ID to be absent from the forest because
     # it was never used to split. In this case, we need to build the complete
     # set of var ID's, as anticipated in binForestByDepth
-    
+
     # create a vector of the range of these ID's.
     vars_used <- min(sorted_var_id):max(sorted_var_id)
     # (this may find some of the var ID's that were not used to split in the
     # forest, but it may still be incomplete, which will be fixed below)
-    
+
     # exclude the status var ID, if it's in the list of var ID's
     if (status_var_exists) {
         if (ranger_obj_forest$status.varID %in% vars_used) {
@@ -170,8 +173,8 @@ countSplitsPerVar <- function(ranger_obj_forest) {
     # normalize the counts
     normalized_counts <- counts / sum(counts)
     # ready to return
-    result <- data.frame(normalized_counts = normalized_counts, 
-                         counts = counts, 
+    result <- data.frame(normalized_counts = normalized_counts,
+                         counts = counts,
                          var_ids = vars_used)
     rownames(result) <- ranger_obj_forest$independent.variable.names
     return(result)
@@ -233,23 +236,23 @@ lookForVarsAbsentInForest <- function(counts, vars_used,
 #' first and second order average minimal depth of a maximal subtree.
 #'
 #' @param ranger_obj A ranger object from the ranger package, which was created
-#' with param write.forest set to TRUE. In other words, it must have a 
+#' with param write.forest set to TRUE. In other words, it must have a
 #' 'forest' property.
-#' @return A data.frame with two columns: averaged first and second order 
+#' @return A data.frame with two columns: averaged first and second order
 #' minimal depth of a maximal subtree.
 #' @export
 calculateAMDMS <- function(ranger_obj) {
     if(!("forest" %in% names(ranger_obj))){
-        stop("no forest attribute present in ranger result. 
+        stop("no forest attribute present in ranger result.
              Please run Ranger with write_forest set to TRUE")
     }
-    
+
     forest <- ranger_obj$forest
-    
+
     # Jan's modification
     for (i in seq_along(forest$split.varIDs)) {
       x <- ranger::treeInfo(ranger_obj, i)
-      forest$split.varIDs[[i]] <- x$splitvarID + 1 
+      forest$split.varIDs[[i]] <- x$splitvarID + 1
     }
 
     binned_forest <- binForestByDepth(forest)
@@ -284,7 +287,7 @@ calculateAMDMS <- function(ranger_obj) {
     # combine the results
     result <- data.frame(avg_fom_depths, avg_som_depths, var_ids)
     names(result) <- c("first_order", "second_order", "variable_id")
-    
+
     # count number of times that each variable was split
     splits_per_var <- countSplitsPerVar(forest)
     # assign the rownames
