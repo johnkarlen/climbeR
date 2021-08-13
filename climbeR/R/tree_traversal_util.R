@@ -245,6 +245,13 @@ calculateAMDMS <- function(ranger_obj) {
     }
     
     forest <- ranger_obj$forest
+    
+    # Jan's modification
+    for (i in seq_along(forest$split.varIDs)) {
+      x <- ranger::treeInfo(ranger_obj, i)
+      forest$split.varIDs[[i]] <- x$splitvarID + 1 
+    }
+
     binned_forest <- binForestByDepth(forest)
     # retrieve variable ID's for matching
     var_ids <- binned_forest$variable_ids_used
