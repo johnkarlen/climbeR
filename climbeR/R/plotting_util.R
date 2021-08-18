@@ -19,8 +19,9 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
                                           add_text_labels = FALSE) {
 
     # exclude features that only have a first order value for the metric
-    plot_data <- eval_data[eval_data$second_order != -1, ]
-    plot_data <- plot_data[order(plot_data$second_order), ]
+    plot_data <- eval_data |>
+        dplyr::filter(second_order != -1) |>
+        dplyr::arrange(second_order)
 
     # palette
     colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(plot_data))
