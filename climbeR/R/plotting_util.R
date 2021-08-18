@@ -29,24 +29,23 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
     so_vs_fo <- ggplot(plot_data, aes(x = first_order,
                                       y = second_order,
                                       size = counts,
-                                      color = factor(second_order)),
-                       environment = environment())
+                                      color = splitvarName),
+                       environment = environment()) +
+        scale_colour_manual(values = colors)
 
     so_vs_fo <- so_vs_fo +
         geom_point() +
         xlab("First Order Depth") + ylab("Second Order Depth") +
         ggtitle("Minimal Depth of a Maximal Subtree\nAveraged Over Forest") +
         labs(size = "number of splits\nin forest", color = "feature") +
-        xlim(min(plot_data$first_order) - 1, max(plot_data$first_order) + 1) +
-        scale_colour_manual(breaks = rev(plot_data$second_order),
-                            labels = rev(rownames(plot_data)),
-                            values = rev(colors))
+        xlim(min(plot_data$first_order) - 1, max(plot_data$first_order) + 1)
 
     if(add_text_labels){
         # offset the y coord of the text labels
         y_lab_offset = -2
         so_vs_fo <- so_vs_fo +
-            geom_text(aes(label = rownames(plot_data)), size = 1, vjust = y_lab_offset)
+            geom_text(aes(label = rownames(plot_data)),
+                      size = 1, vjust = y_lab_offset)
     }
 
     # separate features that only have a first order value for the metric
@@ -84,7 +83,7 @@ plotAMDMSvsNumSplits <- function(eval_data,
 
     ns_vs_fo <- ggplot(eval_data, aes(x = first_order,
                                       y = counts,
-                                      color = factor(first_order)),
+                                      color = splitvarName),
                        environment = environment())
 
     ns_vs_fo <- ns_vs_fo +
@@ -94,9 +93,7 @@ plotAMDMSvsNumSplits <- function(eval_data,
         ggtitle("Minimal Depth of a Maximal Subtree\nAveraged Over Forest") +
         labs(color = "feature") +
         xlim(min(eval_data$first_order), max(eval_data$first_order) + 1) +
-        scale_colour_manual(breaks = rev(eval_data$first_order),
-                            labels = rev(rownames(eval_data)),
-                            values = rev(colors))
+        scale_colour_manual(values = colors)
 
     if(add_text_labels){
         ns_vs_fo <- ns_vs_fo +
@@ -118,10 +115,10 @@ plotAMDMSvsNumSplits <- function(eval_data,
 #' @export
 baseRPlotting <- function(eval_data) {
     so_vs_fo <- plot(eval_data$second_order ~ eval_data$first_order,
-         xlab = "First Order Depth",
-         ylab = "Second Order Depth",
-         title = "Minimal Depth of a Maximal Subtree\nAveraged Over Forest",
-         data = eval_data[, 1:2])
+                     xlab = "First Order Depth",
+                     ylab = "Second Order Depth",
+                     title = "Minimal Depth of a Maximal Subtree\nAveraged Over Forest",
+                     data = eval_data[, 1:2])
     with(eval_data[, 1:2],
          text(eval_data$second_order ~ eval_data$first_order,
               labels = eval_data[[3]], pos = 4))

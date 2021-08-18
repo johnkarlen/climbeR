@@ -217,16 +217,11 @@ calculateAMDMS <- function(ranger_obj) {
   # combine the results
   result <- data.frame("first_order" = avg_fom_depths,
                        "second_order" = avg_som_depths,
-                       "variable_id" = var_ids - 1)
-  #names(result) <- c("first_order", "second_order", "variable_id")
-
-  # count number of times that each variable was split
-  splits_per_var <- countSplitsPerVar(ranger_obj)
-
-  # join back to results
-  result <- result |>
-    dplyr::inner_join(splits_per_var, by = c('variable_id' = 'splitvarID')) |>
-    dplyr::arrange(first_order)
+                       "variable_id" = var_ids - 1) |>
+    dplyr::inner_join(countSplitsPerVar(ranger_obj),
+                      by = c('variable_id' = 'splitvarID')) |>
+    dplyr::arrange(first_order) |>
+    dplyr::mutate(splitvarName = factor(splitvarName, levels = splitvarName))
 
   return(result)
 }

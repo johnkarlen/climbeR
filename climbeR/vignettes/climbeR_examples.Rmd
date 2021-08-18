@@ -230,7 +230,7 @@ Lets take at the plot:
 plot(so_vs_fo)
 ```
 
-The noise variables are labeled "n_#" 1 through 5. How do the continuous noise variables rank, compared to the categorical variables? They probably beat celltype, which is bad because we know the noise features contain no information! This is why minimal depth of a maximal subtree is not a robust or perfect feature strength method.
+The noise variables are labeled "n_#" 1 through 5. How do the continuous noise variables rank compared to the categorical variables? They probably beat celltype, which is bad because we know the noise features contain no information! This is why minimal depth of a maximal subtree is not a robust or perfect feature strength method.
 
 ## Evaluate Metric with Discrete Noise
 
