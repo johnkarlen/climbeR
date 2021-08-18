@@ -179,7 +179,11 @@ calculateAMDMS <- function(ranger_obj) {
   }
 
   forest <- ranger_obj$forest
-  # Jan's modification
+
+  # Jan Brederecke's modification:
+  # Adjusts for the new ranger forest format, which moved the information we
+  # used to get from forest$split.varIDs to a DF retrievable with
+  # ranger::treeInfo()
   for (i in seq_along(forest$split.varIDs)) {
     x <- ranger::treeInfo(ranger_obj, i)
     forest$split.varIDs[[i]] <- x$splitvarID + 1
