@@ -82,7 +82,7 @@ binForestByDepth <- function(ranger_obj) {
   var_id_set <- ranger_obj$split.varIDs |>
     unlist() |>
     unique() |>
-    na.omit()
+    stats::na.omit()
 
   # number of vars that occur in the forest
   num_vars <- length(var_id_set)

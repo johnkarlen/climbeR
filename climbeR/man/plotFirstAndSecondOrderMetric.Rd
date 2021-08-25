@@ -5,14 +5,17 @@
 \title{Plot Second Order vs First Order, minimal depth of a maximal subtree,
 averaged over the forest (shortened to "metric" for brevity)}
 \usage{
-plotFirstAndSecondOrderMetric(eval_data, plot_missing_so = FALSE,
-  add_text_labels = FALSE)
+plotFirstAndSecondOrderMetric(
+  eval_data,
+  plot_missing_so = FALSE,
+  add_text_labels = FALSE
+)
 }
 \arguments{
 \item{eval_data}{The output of calculateAMDMS.}
 
 \item{plot_missing_so}{An optional parameter to show features that only
-have a first order metric value. Variables can have high feature strength, 
+have a first order metric value. Variables can have high feature strength,
 but may be unlikely to have a second maximal subtree because of low
 cardinality.}
 
@@ -26,4 +29,3 @@ order average minimal depth of a maximal subtree depth.
 \description{
 Given evaluated data from calculateAMDMS, plot the result.
 }
-

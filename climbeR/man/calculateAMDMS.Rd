@@ -8,11 +8,11 @@ calculateAMDMS(ranger_obj)
 }
 \arguments{
 \item{ranger_obj}{A ranger object from the ranger package, which was created
-with param write.forest set to TRUE. In other words, it must have a 
+with param write.forest set to TRUE. In other words, it must have a
 'forest' property.}
 }
 \value{
-A data.frame with two columns: averaged first and second order 
+A data.frame with two columns: averaged first and second order
 minimal depth of a maximal subtree.
 }
 \description{
@@ -20,4 +20,3 @@ Given a result from the Ranger package (write.forest must
 be set to TRUE), this function will traverse the trees and calculate the
 first and second order average minimal depth of a maximal subtree.
 }
-

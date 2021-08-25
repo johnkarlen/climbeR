@@ -7,12 +7,12 @@
 getAndPlotMetric(ranger_result, plot_missing_so = FALSE)
 }
 \arguments{
-\item{ranger_result}{A ranger object from the ranger package, which was 
+\item{ranger_result}{A ranger object from the ranger package, which was
 created setting param write.forest to TRUE. In other words, it must have a
 'forest' property.}
 
 \item{plot_missing_so}{An optional parameter to show features that only
-have a first order metric value. Variables can have high feature strength, 
+have a first order metric value. Variables can have high feature strength,
 but may be unlikely to have a second maximal subtree because of low
 cardinality.}
 }
@@ -22,7 +22,7 @@ data, element 2 is the plot of number of splits vs first order metric,
 element 3 is a plot of second order vs first order.
 }
 \description{
-Comprehensive function for calculating minimal depth of a maximal 
+Comprehensive function for calculating minimal depth of a maximal
 subtree averaged over the forest and then plotting the result.
 }
 \examples{
@@ -32,4 +32,3 @@ rg.veteran <- ranger(Surv(time, status) ~ ., data = veteran, write.forest =
 TRUE)
 result <- getAndPlotMetric(rg.veteran)
 }
-

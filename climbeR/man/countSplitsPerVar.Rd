@@ -4,11 +4,11 @@
 \alias{countSplitsPerVar}
 \title{Count Splits Per Variable}
 \usage{
-countSplitsPerVar(ranger_obj_forest)
+countSplitsPerVar(ranger_obj)
 }
 \arguments{
-\item{ranger_obj_forest}{A ranger object from the ranger package, which was created
-with param write.forest set to TRUE. In other words, it must have a 
+\item{ranger_obj}{A ranger object from the ranger package, which was created
+with param write.forest set to TRUE. In other words, it must have a
 'forest' property.}
 }
 \value{
@@ -19,4 +19,3 @@ normalized counts. Rows are labeled by variable names.
 This function counts the number of times each variable was used to split a
 tree.
 }
-

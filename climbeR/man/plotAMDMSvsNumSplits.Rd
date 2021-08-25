@@ -19,4 +19,3 @@ plot object
 Plots the metric against the number of splits in the forest. Features with
 many splits will be weighed unfairly by the metric.
 }
-

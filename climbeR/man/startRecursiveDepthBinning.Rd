@@ -12,10 +12,9 @@ function will pass it to the recursiveDepthBinning function to bin the tree
 by depth, starting at the root.}
 }
 \value{
-A list with an element per depth encountered. Each 
+A list with an element per depth encountered. Each
 element is a vector of variable IDs
 }
 \description{
 The starter function for the recursion in recursiveDepthBinning.
 }
-

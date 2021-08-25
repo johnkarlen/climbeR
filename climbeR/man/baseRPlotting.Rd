@@ -16,4 +16,3 @@ plot object
 \description{
 Base r version of plotFirstAndSecondOrderMetric (just an alternative).
 }
-

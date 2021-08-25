@@ -24,7 +24,7 @@ plotFirstAndSecondOrderMetric <- function(eval_data,
         dplyr::arrange(second_order)
 
     # palette
-    colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(plot_data))
+    colors <- grDevices::colorRampPalette(c("blue", "yellow", "red"))(nrow(plot_data))
 
     so_vs_fo <- ggplot(plot_data, aes(x = first_order,
                                       y = second_order,
@@ -79,7 +79,7 @@ plotAMDMSvsNumSplits <- function(eval_data,
                                  add_text_labels = FALSE) {
 
     # palette
-    colors <- colorRampPalette(c("blue", "yellow", "red"))(nrow(eval_data))
+    colors <- grDevices::colorRampPalette(c("blue", "yellow", "red"))(nrow(eval_data))
 
     ns_vs_fo <- ggplot(eval_data, aes(x = first_order,
                                       y = counts,
