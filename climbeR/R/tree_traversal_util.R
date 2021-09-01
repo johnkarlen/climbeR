@@ -64,7 +64,7 @@ startRecursiveDepthBinning <- function(tree_split_varIDs) {
 #' with param write.forest set to TRUE. In other words, it must have a
 #' 'forest' property.
 #' @return A list with 3 elements. The first is a list of vectors -
-#' one for each independent variable ocurring in the forest (this may not
+#' one for each independent variable occurring in the forest (this may not
 #' be the complete set of independent variables, but we will account for any
 #' variables that do not occur in the forest later). Each vector contains all
 #' minimal depths of maximal subtrees in the forest, for the corresponding

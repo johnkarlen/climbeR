@@ -5,14 +5,16 @@ Version: 0.2
 Authors@R: c(person("John", "Karlen", email = "jkarlen@massmutual.com",
                   role = c("aut", "cre")), 
                   person("MassMutual Advanced Analytics", 
-                  comment="http://datascience.massmutual.com", role="aut"))
+                  comment="http://datascience.massmutual.com", role="aut"),
+                  person("Jan", "Brederecke", email = "j.brederecke@uke.de",
+                  role = "ctb"))
 Description: Calculates first, and second order, average minimal depth of a
     maximal subtree for a forest object produced by the R Ranger
     package. This variable importance metric is implemented as described in
     Ishwaran et. al.
     ("High-Dimensional Variable Selection for Survival Data", March 2010)
 Depends:
-    R (>= 3.1.0)
+    R (>= 4.1.0)
 License: MIT + file LICENSE
 Imports:
     ggplot2 (>= 1.0.1),

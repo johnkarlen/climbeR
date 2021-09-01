@@ -9,7 +9,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# Intoduction
+# Introduction
 
 Feature strength in Random Forests is difficult to assess. In their paper, "High-dimensional variable selection for survival data", Ishwaran, Hemant, et al. describe a useful metric; the minimal depth at which a variable is used to split, on average, in the forest (1). The climbeR package is intended to calculate and visualize this metric, given the result of a Random Forest experiment.
 
@@ -80,7 +80,7 @@ How does this feature strength metric compare to the VIMP results of ranger?
 knitr::kable(rg.iris$variable.importance)
 ```
 
-In our plot, dot size represents split frequency of the feature in the forest. A boolean variable can only be used to split once per population because it is binary. This effect limits split frequency (chosing to split on a boolean feature prevents descendant nodes from using that feature to split again). A variable with high cardinality can be used to split many times per population, which can have the affect of saturating a tree's decision nodes, and inflating the average minimal depth of a maximal subtree. This means that the metric unfairly weighs variables of disparate cardinalities.
+In our plot, dot size represents split frequency of the feature in the forest. A boolean variable can only be used to split once per population because it is binary. This effect limits split frequency (choosing to split on a boolean feature prevents descendant nodes from using that feature to split again). A variable with high cardinality can be used to split many times per population, which can have the affect of saturating a tree's decision nodes, and inflating the average minimal depth of a maximal subtree. This means that the metric unfairly weighs variables of disparate cardinalities.
 
 To further illustrate this bias towards features with high cardinality, we can plot the metric against split frequency.
 
