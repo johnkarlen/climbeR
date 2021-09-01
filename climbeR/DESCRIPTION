@@ -24,6 +24,7 @@ Suggests:
     survival (>= 2.38-1),
     knitr,
     rmarkdown,
-    markdown
+    markdown,
+    testthat
 RoxygenNote: 7.1.1
 VignetteBuilder: knitr
