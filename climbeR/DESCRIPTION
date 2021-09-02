@@ -1,7 +1,7 @@
 Package: climbeR
 Title: Calculate Average Minimal Depth of a Maximal Subtree for Ranger Package
     Forests
-Version: 0.2
+Version: 0.2.0
 Authors@R: c(person("John", "Karlen", email = "jkarlen@massmutual.com",
                   role = c("aut", "cre")), 
                   person("MassMutual Advanced Analytics", 
